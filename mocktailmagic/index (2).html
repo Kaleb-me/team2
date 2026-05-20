@@ -1,151 +1,71 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sip & Store 🥤 Drink Database</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
+const recipes = [
+  {
+    name: "Sunset Citrus Cooler",
+    type: "citrus",
+    ingredients: "Orange juice, lemon juice, soda water, ice",
+    steps: "Mix juices, add ice, top with soda water, stir gently."
+  },
+  {
+    name: "Berry Bliss Fizz",
+    type: "berry",
+    ingredients: "Strawberries, blueberries, sparkling water, mint",
+    steps: "Muddle berries, add ice, pour sparkling water, garnish with mint."
+  },
+  {
+    name: "Tropical Dream",
+    type: "tropical",
+    ingredients: "Pineapple juice, coconut water, lime, ice",
+    steps: "Mix all ingredients, shake well, serve chilled."
+  },
+  {
+    name: "Citrus Spark Twist",
+    type: "citrus",
+    ingredients: "Grapefruit juice, lemon soda, orange slices",
+    steps: "Combine juices and soda, add fruit slices for garnish."
+  }
+];
 
-  <header>
-    <div class="header-blob"></div>
-    <h1>🥤 Sip &amp; Store</h1>
-    <p class="subtitle">Your bubbly drink database</p>
-    <div class="header-stats">
-      <span id="totalCount">0 drinks</span>
-      <span class="dot">·</span>
-      <span id="categoryCount">0 categories</span>
-    </div>
-  </header>
+const container = document.getElementById("recipeContainer");
 
-  <!-- Controls Bar -->
-  <div class="controls">
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="Search drinks..." />
-    </div>
-    <button class="btn-add" onclick="openAddModal()">＋ Add Drink</button>
-  </div>
+function displayRecipes(list) {
+  container.innerHTML = "";
 
-  <!-- Filter Tabs -->
-  <div class="filters" id="filterBar">
-    <button class="filter-btn active" data-cat="all" onclick="setFilter('all', this)">All 🍶</button>
-  </div>
+  list.forEach(recipe => {
+    const card = document.createElement("div");
+    card.classList.add("card");
 
-  <!-- Sort Row -->
-  <div class="sort-row">
-    <span class="sort-label">Sort by:</span>
-    <select id="sortSelect" onchange="renderDrinks()">
-      <option value="name">Name A–Z</option>
-      <option value="name-desc">Name Z–A</option>
-      <option value="category">Category</option>
-      <option value="price">Price ↑</option>
-      <option value="price-desc">Price ↓</option>
-    </select>
-    <span id="resultCount" class="result-count"></span>
-  </div>
+    card.innerHTML = `
+      <h3>${recipe.name}</h3>
+      <p>${recipe.type.toUpperCase()}</p>
+    `;
 
-  <!-- Drink Grid -->
-  <main id="drinkGrid"></main>
+    card.onclick = () => openModal(recipe);
 
-  <div id="emptyState" class="empty-state hidden">
-    <div class="empty-emoji">🫙</div>
-    <p>No drinks found!</p>
-    <small>Try a different filter or add a new drink.</small>
-  </div>
+    container.appendChild(card);
+  });
+}
 
-  <!-- ===== ADD / EDIT MODAL ===== -->
-  <div id="formModal" class="modal hidden">
-    <div class="modal-content form-modal">
-      <button class="close-btn" onclick="closeFormModal()">×</button>
-      <h2 id="formTitle">➕ Add Drink</h2>
-      <div class="form-group">
-        <label>Drink Name *</label>
-        <input type="text" id="fName" placeholder="e.g. Mango Tango Lemonade" />
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Category *</label>
-          <input type="text" id="fCategory" placeholder="e.g. Citrus, Berry…" list="catSuggestions"/>
-          <datalist id="catSuggestions"></datalist>
-        </div>
-        <div class="form-group">
-          <label>Price ($)</label>
-          <input type="number" id="fPrice" placeholder="3.99" step="0.01" min="0"/>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Description</label>
-        <textarea id="fDesc" placeholder="A short description of the drink…" rows="2"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Ingredients</label>
-        <textarea id="fIngredients" placeholder="List ingredients separated by commas…" rows="2"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Emoji Icon</label>
-        <input type="text" id="fEmoji" placeholder="🍹" maxlength="4"/>
-      </div>
-      <div class="form-group">
-        <label>Tags (comma-separated)</label>
-        <input type="text" id="fTags" placeholder="cold, sweet, sparkling…"/>
-      </div>
-      <div id="formError" class="form-error hidden">Please fill in the required fields.</div>
-      <div class="form-actions">
-        <button class="btn-cancel" onclick="closeFormModal()">Cancel</button>
-        <button class="btn-save" onclick="saveDrink()">💾 Save Drink</button>
-      </div>
-    </div>
-  </div>
+function filterRecipes(type) {
+  if (type === "all") {
+    displayRecipes(recipes);
+  } else {
+    const filtered = recipes.filter(r => r.type === type);
+    displayRecipes(filtered);
+  }
+}
 
-  <!-- ===== VIEW DETAIL MODAL ===== -->
-  <div id="detailModal" class="modal hidden">
-    <div class="modal-content detail-modal">
-      <button class="close-btn" onclick="closeDetailModal()">×</button>
-      <div class="detail-header">
-        <span id="detailEmoji" class="detail-emoji"></span>
-        <div>
-          <h2 id="detailName"></h2>
-          <span id="detailCategory" class="category-badge"></span>
-        </div>
-        <span id="detailPrice" class="detail-price"></span>
-      </div>
-      <p id="detailDesc" class="detail-desc"></p>
-      <div class="detail-section">
-        <strong>🧪 Ingredients</strong>
-        <p id="detailIngredients"></p>
-      </div>
-      <div class="detail-section" id="detailTagsWrap">
-        <strong>🏷️ Tags</strong>
-        <div id="detailTags" class="tag-list"></div>
-      </div>
-      <div class="detail-actions">
-        <button class="btn-edit" onclick="editCurrentDrink()">✏️ Edit</button>
-        <button class="btn-delete" onclick="deleteCurrentDrink()">🗑️ Delete</button>
-      </div>
-    </div>
-  </div>
+function openModal(recipe) {
+  document.getElementById("modalTitle").textContent = recipe.name;
+  document.getElementById("modalIngredients").textContent =
+    "Ingredients: " + recipe.ingredients;
+  document.getElementById("modalSteps").textContent =
+    "Steps: " + recipe.steps;
 
-  <!-- ===== CONFIRM DELETE MODAL ===== -->
-  <div id="confirmModal" class="modal hidden">
-    <div class="modal-content confirm-modal">
-      <div class="confirm-icon">🗑️</div>
-      <h3>Delete this drink?</h3>
-      <p id="confirmName" class="confirm-name"></p>
-      <p class="confirm-sub">This can't be undone.</p>
-      <div class="form-actions">
-        <button class="btn-cancel" onclick="closeConfirmModal()">Cancel</button>
-        <button class="btn-delete" onclick="confirmDelete()">Delete</button>
-      </div>
-    </div>
-  </div>
+  document.getElementById("modal").classList.remove("hidden");
+}
 
-  <!-- Toast -->
-  <div id="toast" class="toast hidden"></div>
+function closeModal() {
+  document.getElementById("modal").classList.add("hidden");
+}
 
-  <script src="script.js"></script>
-</body>
-</html>
+displayRecipes(recipes);
