@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mocktail Magic 🍓</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="index">
+
+  <header class="sticky-header">
+    <div class="header-inner">
+      <div>
+        <h1>🍹 Mocktail Magic</h1>
+        <p>Fresh, fruity, and alcohol-free delights</p>
+      </div>
+      <a href="editor.html" class="add-recipe-btn">+ Add Your Recipe</a>
+    </div>
+  </header>
+
+  <div class="filters">
+    <button class="active" onclick="filterRecipes('all', this)">All</button>
+    <button onclick="filterRecipes('citrus', this)">Citrus 🍊</button>
+    <button onclick="filterRecipes('berry', this)">Berry 🍓</button>
+    <button onclick="filterRecipes('tropical', this)">Tropical 🍍</button>
+  </div>
+
+  <main id="recipeContainer">
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading recipes...</p>
+    </div>
+  </main>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-content recipe-modal">
+      <span onclick="closeModal()" class="close">&times;</span>
+      <h2 id="modalTitle"></h2>
+      <div class="modal-badge" id="modalBadge"></div>
+      <div class="modal-section">
+        <h4>🧃 Ingredients</h4>
+        <p id="modalIngredients"></p>
+      </div>
+      <div class="modal-section">
+        <h4>📋 Steps</h4>
+        <p id="modalSteps"></p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>

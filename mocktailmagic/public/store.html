@@ -4,26 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sip & Store 🥤 Drink Database</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="storestyles.css" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
-  
+<body data-page="store">
+
   <nav class="navbar">
     <div class="logo">🍹 Mocktail Magic</div>
-
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
-      <li><a href="store.html">Submit Recipe</a></li>
-      <li><a href="#">Favorites</a></li>
-      <li><a href="#">About</a></li>
+      <li><a href="store.html">Sip &amp; Store</a></li>
+      <li><a href="editor.html">Add Recipe</a></li>
     </ul>
   </nav>
 
   <header>
     <div class="header-blob"></div>
-    <h1>🥤 Sip &amp; Store</h1>
+    <h1 class="large">🥤 Sip &amp; Store</h1>
     <p class="subtitle">Your bubbly drink database</p>
     <div class="header-stats">
       <span id="totalCount">0 drinks</span>
@@ -68,7 +64,7 @@
     <small>Try a different filter or add a new drink.</small>
   </div>
 
-  <!-- ===== ADD / EDIT MODAL ===== -->
+  <!-- ADD / EDIT MODAL -->
   <div id="formModal" class="modal hidden">
     <div class="modal-content form-modal">
       <button class="close-btn" onclick="closeFormModal()">×</button>
@@ -112,7 +108,7 @@
     </div>
   </div>
 
-  <!-- ===== VIEW DETAIL MODAL ===== -->
+  <!-- VIEW DETAIL MODAL -->
   <div id="detailModal" class="modal hidden">
     <div class="modal-content detail-modal">
       <button class="close-btn" onclick="closeDetailModal()">×</button>
@@ -140,7 +136,7 @@
     </div>
   </div>
 
-  <!-- ===== CONFIRM DELETE MODAL ===== -->
+  <!-- CONFIRM DELETE MODAL -->
   <div id="confirmModal" class="modal hidden">
     <div class="modal-content confirm-modal">
       <div class="confirm-icon">🗑️</div>
@@ -157,6 +153,6 @@
   <!-- Toast -->
   <div id="toast" class="toast hidden"></div>
 
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add a Recipe · Mocktail Magic 🍓</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-page="editor">
+
+  <header class="sticky-header">
+    <div class="header-inner">
+      <div>
+        <h1>🍹 Mocktail Magic</h1>
+        <p>Fresh, fruity, and alcohol-free delights</p>
+      </div>
+      <a href="index.html" class="add-recipe-btn">← Back to Recipes</a>
+    </div>
+  </header>
+
+  <main class="editor-main">
+    <div class="editor-card">
+      <h2>🧪 Create Your Mocktail</h2>
+      <p class="editor-subtitle">Share your recipe with the world!</p>
+
+      <div class="form-group">
+        <label for="recipeName">Recipe Name</label>
+        <input type="text" id="recipeName" placeholder="e.g. Mango Sunrise Fizz" maxlength="60" />
+      </div>
+
+      <div class="form-group">
+        <label>Category</label>
+        <div class="type-selector">
+          <input type="radio" name="recipeType" id="typeCitrus" value="citrus" />
+          <label for="typeCitrus" class="type-chip">🍊 Citrus</label>
+
+          <input type="radio" name="recipeType" id="typeBerry" value="berry" />
+          <label for="typeBerry" class="type-chip">🍓 Berry</label>
+
+          <input type="radio" name="recipeType" id="typeTropical" value="tropical" />
+          <label for="typeTropical" class="type-chip">🍍 Tropical</label>
+
+          <input type="radio" name="recipeType" id="typeOther" value="other" />
+          <label for="typeOther" class="type-chip">🍹 Other</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="recipeIngredients">Ingredients</label>
+        <textarea id="recipeIngredients" rows="4" placeholder="e.g. Mango juice, lime juice, soda water, fresh mint, ice"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="recipeSteps">Steps</label>
+        <textarea id="recipeSteps" rows="5" placeholder="e.g. Combine mango juice and lime juice over ice. Top with soda water and garnish with mint."></textarea>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" onclick="submitRecipe()">
+        <span id="btnText">🍹 Submit Recipe</span>
+      </button>
+
+      <div id="successMsg" class="success-msg hidden">
+        ✅ Recipe added! <a href="index.html">See all recipes →</a>
+      </div>
+      <div id="errorMsg" class="error-msg hidden"></div>
+    </div>
+  </main>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
