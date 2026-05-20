@@ -1,76 +1,33 @@
 // =====================================================
 //  SIP & STORE — Drink Database
-//  Local state (swap db.js below for Firestore reads)
+//  Persisted via localStorage until Firestore is wired
 // =====================================================
 
-// --------------- INITIAL DATA ---------------
-// TODO: Replace with Firestore reads (getDocs / onSnapshot)
-let drinks = [
-  {
-    id: uid(),
-    name: "Sunset Citrus Cooler",
-    category: "Citrus",
-    emoji: "🍊",
-    price: 3.99,
-    description: "A bright, tangy cooler bursting with orange and lemon.",
-    ingredients: "Orange juice, lemon juice, soda water, ice",
-    tags: ["cold", "tangy", "sparkling"]
-  },
-  {
-    id: uid(),
-    name: "Berry Bliss Fizz",
-    category: "Berry",
-    emoji: "🍓",
-    price: 4.25,
-    description: "Muddled berries meet sparkling water for the perfect sip.",
-    ingredients: "Strawberries, blueberries, sparkling water, mint",
-    tags: ["fruity", "sparkling", "refreshing"]
-  },
-  {
-    id: uid(),
-    name: "Tropical Dream",
-    category: "Tropical",
-    emoji: "🍍",
-    price: 4.75,
-    description: "Close your eyes — you're on a beach.",
-    ingredients: "Pineapple juice, coconut water, lime, ice",
-    tags: ["tropical", "cold", "sweet"]
-  },
-  {
-    id: uid(),
-    name: "Citrus Spark Twist",
-    category: "Citrus",
-    emoji: "🍋",
-    price: 3.50,
-    description: "Grapefruit and lemon soda collide in this zingy twist.",
-    ingredients: "Grapefruit juice, lemon soda, orange slices",
-    tags: ["citrusy", "bubbly"]
-  },
-  {
-    id: uid(),
-    name: "Watermelon Wave",
-    category: "Fruity",
-    emoji: "🍉",
-    price: 4.00,
-    description: "Juicy summer vibes in every sip.",
-    ingredients: "Watermelon juice, mint, lime, sparkling water",
-    tags: ["summer", "sweet", "sparkling"]
-  },
-  {
-    id: uid(),
-    name: "Minty Lemonade",
-    category: "Classic",
-    emoji: "🌿",
-    price: 3.25,
-    description: "The timeless lemonade — made better with fresh mint.",
-    ingredients: "Lemon juice, mint leaves, sugar syrup, water",
-    tags: ["classic", "refreshing", "herby"]
+// --------------- PERSISTENCE ---------------
+// TODO (Firestore): Replace loadDrinks / saveDrinks with
+//   getDocs(collection(db, "drinks")) on init,
+//   and addDoc / updateDoc / deleteDoc on mutations.
+
+const STORAGE_KEY = "sipAndStore_drinks";
+
+function loadDrinks() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
   }
-];
+}
+
+function persistDrinks() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(drinks));
+}
 
 // --------------- STATE ---------------
-let currentFilter = "all";
-let currentDrinkId = null; // used for detail / edit / delete
+let drinks        = loadDrinks();
+let currentFilter  = "all";
+let currentDrinkId = null;
+let editingId      = null;
 
 // --------------- UTILS ---------------
 function uid() {
@@ -102,7 +59,6 @@ function renderDrinks() {
     return matchCat && matchSearch;
   });
 
-  // Sort
   list = list.sort((a, b) => {
     if (sortVal === "name")       return a.name.localeCompare(b.name);
     if (sortVal === "name-desc")  return b.name.localeCompare(a.name);
@@ -153,7 +109,6 @@ function buildFilterTabs() {
   const bar  = document.getElementById("filterBar");
   const cats = getCategories();
 
-  // Remove old category buttons (keep "All")
   [...bar.querySelectorAll(".filter-btn:not([data-cat='all'])")].forEach(b => b.remove());
 
   cats.forEach(cat => {
@@ -165,11 +120,9 @@ function buildFilterTabs() {
     bar.appendChild(btn);
   });
 
-  // Update datalist for category suggestions
   const dl = document.getElementById("catSuggestions");
   dl.innerHTML = cats.map(c => `<option value="${c}">`).join("");
 
-  // Update header stats
   document.getElementById("totalCount").textContent    = `${drinks.length} drink${drinks.length !== 1 ? "s" : ""}`;
   document.getElementById("categoryCount").textContent = `${cats.length} categor${cats.length !== 1 ? "ies" : "y"}`;
 }
@@ -220,14 +173,12 @@ function closeDetailModal() {
 }
 
 // --------------- ADD / EDIT MODAL ---------------
-let editingId = null;
-
 function openAddModal() {
   editingId = null;
   document.getElementById("formTitle").textContent = "➕ Add Drink";
   clearForm();
   document.getElementById("formModal").classList.remove("hidden");
-  document.getElementById("fName").focus();
+  setTimeout(() => document.getElementById("fName").focus(), 50);
 }
 
 function openEditModal(drink) {
@@ -284,17 +235,18 @@ function saveDrink() {
   };
 
   if (editingId) {
-    // TODO: Firestore — updateDoc(doc(db, "drinks", editingId), drinkData)
+    // TODO Firestore: updateDoc(doc(db, "drinks", editingId), drinkData)
     const idx = drinks.findIndex(d => d.id === editingId);
     if (idx !== -1) drinks[idx] = { ...drinks[idx], ...drinkData };
     showToast("✏️ Drink updated!");
   } else {
-    // TODO: Firestore — addDoc(collection(db, "drinks"), drinkData)
+    // TODO Firestore: addDoc(collection(db, "drinks"), drinkData)
     drinkData.id = uid();
     drinks.push(drinkData);
     showToast("🎉 Drink added!");
   }
 
+  persistDrinks();   // save to localStorage
   closeFormModal();
   buildFilterTabs();
   renderDrinks();
@@ -315,9 +267,10 @@ function closeConfirmModal() {
 
 function confirmDelete() {
   if (!currentDrinkId) return;
-  // TODO: Firestore — deleteDoc(doc(db, "drinks", currentDrinkId))
+  // TODO Firestore: deleteDoc(doc(db, "drinks", currentDrinkId))
   drinks = drinks.filter(d => d.id !== currentDrinkId);
   currentDrinkId = null;
+  persistDrinks();   // save to localStorage
   closeConfirmModal();
   buildFilterTabs();
   renderDrinks();
