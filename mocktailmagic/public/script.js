@@ -4,8 +4,9 @@
 //  All persistence via Firebase Firestore
 // =============================================================
 
-import { db } from "./firebase-config.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
+  getFirestore,
   collection,
   getDocs,
   addDoc,
@@ -16,6 +17,18 @@ import {
   orderBy,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAHgm_CKR26INfBKX7X4dtx0EKgUqzJR4w",
+  authDomain: "mocktail-magic-baf9a.firebaseapp.com",
+  projectId: "mocktail-magic-baf9a",
+  storageBucket: "mocktail-magic-baf9a.firebasestorage.app",
+  messagingSenderId: "441721350813",
+  appId: "1:441721350813:web:817e0c4e8de655c9008274"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 // Detect which page we're on
 const PAGE = document.body.dataset.page; // set via <body data-page="index|editor|store">
