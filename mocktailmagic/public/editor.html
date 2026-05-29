@@ -14,7 +14,14 @@
         <h1>🍹 Mocktail Magic</h1>
         <p>Fresh, fruity, and alcohol-free delights</p>
       </div>
-      <a href="index.html" class="add-recipe-btn">← Back to Recipes</a>
+      <div class="header-actions">
+        <div id="userPill" class="user-pill hidden">
+          <img id="userAvatar" src="" alt="avatar" class="user-avatar" />
+          <span id="userName"></span>
+          <button class="sign-out-btn" onclick="handleSignOut()">Sign out</button>
+        </div>
+        <a href="index.html" class="add-recipe-btn">← Back to Recipes</a>
+      </div>
     </div>
   </header>
 

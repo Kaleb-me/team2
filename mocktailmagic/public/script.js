@@ -17,6 +17,13 @@ import {
   orderBy,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAHgm_CKR26INfBKX7X4dtx0EKgUqzJR4w",
@@ -27,11 +34,36 @@ const firebaseConfig = {
   appId: "1:441721350813:web:817e0c4e8de655c9008274"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app      = initializeApp(firebaseConfig);
+const db       = getFirestore(app);
+const auth     = getAuth(app);
+const provider = new GoogleAuthProvider();
 
 // Detect which page we're on
 const PAGE = document.body.dataset.page; // set via <body data-page="index|editor|store">
+
+// =============================================================
+//  SHARED AUTH HELPERS
+// =============================================================
+
+// Keep header user pill in sync on every page
+onAuthStateChanged(auth, user => {
+  const pill   = document.getElementById("userPill");
+  const avatar = document.getElementById("userAvatar");
+  const uname  = document.getElementById("userName");
+  if (!pill) return;
+  if (user) {
+    if (avatar) avatar.src = user.photoURL || "";
+    if (uname)  uname.textContent = user.displayName?.split(" ")[0] || "You";
+    pill.classList.remove("hidden");
+  } else {
+    pill.classList.add("hidden");
+  }
+});
+
+window.handleSignOut = async function() {
+  await signOut(auth);
+};
 
 // =============================================================
 //  INDEX PAGE
@@ -40,6 +72,33 @@ if (PAGE === "index") {
 
   const container = document.getElementById("recipeContainer");
   let allRecipes = [];
+
+  // Sign-in modal logic
+  window.handleAddRecipeClick = function() {
+    const user = auth.currentUser;
+    if (user) {
+      window.location.href = "editor.html";
+    } else {
+      document.getElementById("authModal").classList.remove("hidden");
+    }
+  };
+
+  window.closeAuthModal = function() {
+    document.getElementById("authModal").classList.add("hidden");
+  };
+
+  window.signInWithGoogle = async function() {
+    try {
+      await signInWithPopup(auth, provider);
+      window.location.href = "editor.html";
+    } catch (err) {
+      console.error("Sign-in error:", err);
+    }
+  };
+
+  document.getElementById("authModal")?.addEventListener("click", e => {
+    if (e.target.id === "authModal") window.closeAuthModal();
+  });
 
   async function loadRecipes() {
     try {
@@ -100,7 +159,14 @@ if (PAGE === "index") {
 // =============================================================
 if (PAGE === "editor") {
 
+  // Redirect if not signed in
+  onAuthStateChanged(auth, user => {
+    if (!user) window.location.href = "index.html";
+  });
+
   window.submitRecipe = async function() {
+    const user = auth.currentUser;
+    if (!user) { window.location.href = "index.html"; return; }
     const name        = document.getElementById("recipeName").value.trim();
     const typeEl      = document.querySelector('input[name="recipeType"]:checked');
     const ingredients = document.getElementById("recipeIngredients").value.trim();
